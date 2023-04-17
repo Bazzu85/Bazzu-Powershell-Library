@@ -2,7 +2,7 @@ Function CheckDirectories (){
     [CmdletBinding()] param(
         [Parameter()]
         [ValidateNotNullOrEmpty()]
-        [string] $mainScriptPath= $(throw "Script path is mandatory ($($MyInvocation.MyCommand) function).")
+        [string] $mainScriptPath
     )
     if (!(Test-Path -LiteralPath "$mainScriptPath\configuration")){
         New-Item -Path ("$mainScriptPath\configuration") -ItemType Directory -Force
