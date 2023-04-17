@@ -4,6 +4,8 @@ GetSRCFromGitHub -SRCFolder "$PSScriptRoot\src" -MainScriptPath $PSScriptRoot
 . '.\src\Logging\Logging.ps1'
 . '.\src\Folders Manager\Folders Manager.ps1'
 . '.\src\Configuration Manager\Configuration Manager.ps1'
+. '.\src\Notifications\Import required notifications modules.ps1'
+. '.\src\Notifications\Send Notification.ps1'
 
 
 CreateMissingFolder -FolderToCreate "$PSScriptRoot\log" 

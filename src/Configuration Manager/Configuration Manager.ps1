@@ -1,42 +1,22 @@
 Function Get-ConfigurationFromJson () {
     [CmdletBinding()] param(
         [Parameter()]
+        [PSCustomObject] $DefaultConfiguration= $(throw "Default configuration is mandatory ($($MyInvocation.MyCommand) function)."),
         [Parameter()]
         [string] $MainScriptPath= $(throw "Script path is mandatory ($($MyInvocation.MyCommand) function).")
     )
 
     $configurationFile = "$MainScriptPath\configuration\configuration.json"
 
-    LogWrite "Loading configuration file from $configurationFile" $MainScriptPath
+    LogWrite -LogString "Loading configuration file from $configurationFile" -MainScriptPath $MainScriptPath
     
     if (!(Test-Path -LiteralPath "$MainScriptPath\configuration")){
         New-Item -Path ("$MainScriptPath\configuration") -ItemType Directory -Force
     }
 
-    # Generate a Default object
-    $defaultConfiguration = [PSCustomObject]@{
-        checkInterval = 1;
-        debug = $true;
-        waitMinutesBetweenTelegramNotifications = 30;
-        interfaceToCheck = "";
-        openvpnPath = "c:\Program Files\OpenVPN\bin\openvpn-gui.exe";
-        openvpnArgument = "--connect it150.nordvpn.com.udp1194.ovpn";
-        sendTelegramNotification = $false
-        telegramToken = "";
-        telegramChatid = "";
-        telegramSendSilent = $true;
-        sendDiscordNotification = $false
-        discordUri = "";
-        discordAuthor = "Powershell notificator";
-        manageEmule = $false;
-        emulePath = "C:\Program Files\eMule\emule.exe";
-        startMylarService = $false;
-        stopMylarService = $false;
-        mylarServiceName = "Mylar";
-    }
     # If not found, create the config file
     if (!(Test-Path -Path $configurationFile)){
-        LogWrite "No configuration found. Creating a default configuration.json and closing." $MainScriptPath
+        LogWrite -LogString "No configuration found. Creating a default configuration.json and closing." -MainScriptPath $MainScriptPath
         pause
         ConvertTo-Json -InputObject $defaultConfiguration | Out-File $configurationFile
         exit 
@@ -48,52 +28,68 @@ Function Get-ConfigurationFromJson () {
     $configuration = AddMissingProperties $MainScriptPath $configuration $defaultConfiguration $configurationFile
 
     # display the configuration
-    LogWrite "Configuration returned" $MainScriptPath
+    LogWrite -LogString "Configuration returned" -MainScriptPath $MainScriptPath
     foreach ($property in $configuration.PSobject.Properties){
-        LogWrite " $($property.Name): $($property.value)" $MainScriptPath
+        LogWrite -LogString " $($property.Name): $($property.value)" -MainScriptPath $MainScriptPath
     }
 
     return $configuration
 }
 
-Function AddMissingProperties($MainScriptPath, $configuration, $defaultConfiguration, $configurationFile){
-    
+Function AddMissingProperties(){
+    [CmdletBinding()] param(
+        [Parameter()]
+        [string] $MainScriptPath= $(throw "Script path is mandatory ($($MyInvocation.MyCommand) function)."),
+        [Parameter()]
+        [PSCustomObject] $Configuration= $(throw "Configuration to work on is mandatory ($($MyInvocation.MyCommand) function)."),
+        [Parameter()]
+        [PSCustomObject] $DefaultConfiguration= $(throw "Default configuration is mandatory ($($MyInvocation.MyCommand) function)."),
+        [Parameter()]
+        [string] $ConfigurationFile= $(throw "Configuration file is mandatory ($($MyInvocation.MyCommand) function).")
+    )
+
     $addedProperties = 0
     # https://stackoverflow.com/questions/26997511/how-can-you-test-if-an-object-has-a-specific-property
     # https://stackoverflow.com/questions/37688708/iterate-over-psobject-properties-in-powershell
     # iterate the two object properties to find the missing ones and add it to the running configuration
     # this is to automatically allign the code added variables
-    foreach ($defaultProperty in $defaultConfiguration.PSobject.Properties){
+    foreach ($defaultProperty in $DefaultConfiguration.PSobject.Properties){
         # Write-Host $defaultProperty.Name
         # Write-Host $defaultProperty.Value
         $found = $false
-        foreach ($property in $configuration.PSobject.Properties){
+        foreach ($property in $Configuration.PSobject.Properties){
             if ($property.Name -eq $defaultProperty.Name){
                 $found = $true
-                LogWriteDebug "$($defaultProperty.Name) found" $MainScriptPath $configuration.debug
+                LogWriteDebug -LogString "$($defaultProperty.Name) found" -MainScriptPath $MainScriptPath -DebugFlag $configuration.debug
                 break
             }
         }
         if (!$found){
-            $configuration = $configuration | Add-Member -NotePropertyMembers @{ $defaultProperty.Name=$defaultProperty.Value } -PassThru 
-            LogWrite "$($defaultProperty.Name) not found. Adding it to configuration file" $MainScriptPath
+            $Configuration = $Configuration | Add-Member -NotePropertyMembers @{ $defaultProperty.Name=$defaultProperty.Value } -PassThru 
+            LogWrite -LogString "$($defaultProperty.Name) not found. Adding it to Configuration file" -MainScriptPath $MainScriptPath
             $addedProperties++
         }
     }
 
     if ($addedProperties -gt 0){
-        LogWrite "Added some properties to the configuration file. Closing this run" $MainScriptPath
+        LogWrite -LogString "Added some properties to the configuration file. Closing this run" -MainScriptPath $MainScriptPath
         pause
-        ConvertTo-Json -InputObject $configuration | Out-File $configurationFile
+        ConvertTo-Json -InputObject $Configuration | Out-File $ConfigurationFile
         exit
     }
 
     return $configuration
 }
 
-Function Get-ConfigurationLastWriteTime ($MainScriptPath, $configuration) {
+Function Get-ConfigurationLastWriteTime () {
+    [CmdletBinding()] param(
+        [Parameter()]
+        [string] $MainScriptPath= $(throw "Script path is mandatory ($($MyInvocation.MyCommand) function)."),
+        [Parameter()]
+        [PSCustomObject] $Configuration= $(throw "Configuration to work on is mandatory ($($MyInvocation.MyCommand) function).")
+    )
     $configurationFile = "$MainScriptPath\configuration\configuration.json"
     $configurationAttributes = Get-ChildItem -LiteralPath $configurationFile
-    LogWriteDebug "Configuration last write time: $($configurationAttributes.LastWriteTime)" $MainScriptPath $configuration.debug
+    LogWriteDebug -LogString "Configuration last write time: $($configurationAttributes.LastWriteTime)" -MainScriptPath $MainScriptPath -DebugFlag $Configuration.debug
     return $configurationAttributes.LastWriteTime
 }
