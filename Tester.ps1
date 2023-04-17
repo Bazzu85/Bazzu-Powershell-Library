@@ -1,13 +1,11 @@
 . '.\src\GitHub SRC manager.ps1'
 GetSRCFromGitHub -SRCFolder "$PSScriptRoot\src" -MainScriptPath $PSScriptRoot
 
-exit
-$LoggingPS1 = Invoke-WebRequest "https://raw.githubusercontent.com/Bazzu85/Bazzu-Powershell-Library/master/src/Logging/Logging.ps1"
-Invoke-Expression $LoggingPS1
-$FoldersManagerPS1 = Invoke-WebRequest "https://raw.githubusercontent.com/Bazzu85/Bazzu-Powershell-Library/master/src/Folders%20Manager/Folders%20Manager.ps1"
-Invoke-Expression $FoldersManagerPS1
+. '.\src\Logging\Logging.ps1'
+. '.\src\Folders Manager\Folders Manager.ps1'
+. '.\src\Configuration Manager\Configuration Manager.ps1'
+
 
 CreateMissingFolder -FolderToCreate "$PSScriptRoot\log" 
-
 #LogWrite 
 LogWriteDebug -LogString "A" -MainScriptPath $PSScriptRoot -DebugFlag $true
