@@ -16,6 +16,7 @@ Function GetSRCFromGitHub (){
     }
     $FoldersManagerPS1 = Invoke-WebRequest "https://raw.githubusercontent.com/Bazzu85/Bazzu-Powershell-Library/master/public/Folders%20Manager/Folders%20Manager.ps1"
     $FoldersManagerDestinationFile = "$FoldersManagerDestinationFolder\Folders Manager.ps1"
+    Remove-Item $FoldersManagerDestinationFile
     Add-content $FoldersManagerDestinationFile -value $FoldersManagerPS1
 
     # Get the logging functions
@@ -25,6 +26,7 @@ Function GetSRCFromGitHub (){
     }
     $LoggingPS1 = Invoke-WebRequest "https://raw.githubusercontent.com/Bazzu85/Bazzu-Powershell-Library/master/public/Logging/Logging.ps1"
     $LoggingDestinationFile = "$LoggingDestinationFolder\Logging.ps1"
+    Remove-Item $LoggingDestinationFile
     Add-content $LoggingDestinationFile -value $LoggingPS1
 
     # Get the configuration manager functions
@@ -34,7 +36,18 @@ Function GetSRCFromGitHub (){
     }
     $ConfigurationManagerPS1 = Invoke-WebRequest "https://raw.githubusercontent.com/Bazzu85/Bazzu-Powershell-Library/master/public/Configuration%20Manager/Configuration%20Manager.ps1"
     $ConfigurationManagerDestinationFile = "$ConfigurationManagerDestinationFolder\Configuration Manager.ps1"
+    Remove-Item $ConfigurationManagerDestinationFile
     Add-content $ConfigurationManagerDestinationFile -value $ConfigurationManagerPS1
+
+    # Get the Notifications functions
+    $NotificationsDestinationFolder = "$SRCFolder\Notifications"
+    if (!(Test-Path -LiteralPath $NotificationsDestinationFolder)){
+        New-Item -Path ($NotificationsDestinationFolder) -ItemType Directory -Force
+    }
+    $NotificationsPS1 = Invoke-WebRequest "https://raw.githubusercontent.com/Bazzu85/Bazzu-Powershell-Library/master/public/Configuration%20Manager/Configuration%20Manager.ps1"
+    $NotificationsDestinationFile = "$NotificationsDestinationFolder\Notifications.ps1"
+    Remove-Item $NotificationsDestinationFile
+    Add-content $NotificationsDestinationFile -value $NotificationsPS1
 
     
 }
