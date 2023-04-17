@@ -44,8 +44,12 @@ Function GetSRCFromGitHub (){
     if (!(Test-Path -LiteralPath $NotificationsDestinationFolder)){
         New-Item -Path ($NotificationsDestinationFolder) -ItemType Directory -Force
     }
-    $NotificationsPS1 = Invoke-WebRequest "https://raw.githubusercontent.com/Bazzu85/Bazzu-Powershell-Library/master/public/Configuration%20Manager/Configuration%20Manager.ps1"
-    $NotificationsDestinationFile = "$NotificationsDestinationFolder\Notifications.ps1"
+    $NotificationsPS1 = Invoke-WebRequest "https://raw.githubusercontent.com/Bazzu85/Bazzu-Powershell-Library/master/public/Notifications/Import%20required%20notifications%20modules.ps1"
+    $NotificationsDestinationFile = "$NotificationsDestinationFolder\Import required notifications modules.ps1"
+    Remove-Item $NotificationsDestinationFile
+    Add-content $NotificationsDestinationFile -value $NotificationsPS1
+    $NotificationsPS1 = Invoke-WebRequest "https://raw.githubusercontent.com/Bazzu85/Bazzu-Powershell-Library/master/public/Notifications/Send%20Notification.ps1"
+    $NotificationsDestinationFile = "$NotificationsDestinationFolder\Send Notification.ps1"
     Remove-Item $NotificationsDestinationFile
     Add-content $NotificationsDestinationFile -value $NotificationsPS1
 
