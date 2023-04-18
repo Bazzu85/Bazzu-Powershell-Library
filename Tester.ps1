@@ -9,5 +9,11 @@ GetSRCFromGitHub -SRCFolder "$PSScriptRoot\src" -MainScriptPath $PSScriptRoot
 
 
 CreateMissingFolder -FolderToCreate "$PSScriptRoot\log" 
-#LogWrite 
-LogWriteDebug -LogString "A" -MainScriptPath $PSScriptRoot -DebugFlag $true
+CreateMissingFolder -FolderToCreate "$PSScriptRoot\configuration" 
+# LogWrite 
+# LogWriteDebug -LogString "A" -MainScriptPath $PSScriptRoot -DebugFlag $true
+# Generate a Default object
+$defaultConfiguration = [PSCustomObject]@{
+    debug = $true;
+}
+$configuration = Get-ConfigurationFromJson -DefaultConfiguration $defaultConfiguration -MainScriptPath $PSScriptRoot #-ConfigurationFileName "sync Configuration.jso"
