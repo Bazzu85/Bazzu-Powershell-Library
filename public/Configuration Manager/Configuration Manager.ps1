@@ -8,7 +8,7 @@ Function Get-ConfigurationFromJson () {
         [string] $ConfigurationFileName= "configuration.json"
     )
 
-    $configurationFile = "$MainScriptPath\configuration\configuration.json"
+    $configurationFile = "$MainScriptPath\configuration\$ConfigurationFileName"
 
     LogWrite -LogString "Loading configuration file from $configurationFile" -MainScriptPath $MainScriptPath
     
@@ -18,7 +18,7 @@ Function Get-ConfigurationFromJson () {
 
     # If not found, create the config file
     if (!(Test-Path -Path $configurationFile)){
-        LogWrite -LogString "No configuration found. Creating a default configuration.json and closing." -MainScriptPath $MainScriptPath
+        LogWrite -LogString "No configuration found. Creating a default $ConfigurationFileName and closing." -MainScriptPath $MainScriptPath
         pause
         ConvertTo-Json -InputObject $defaultConfiguration | Out-File $configurationFile
         exit 
@@ -88,9 +88,12 @@ Function Get-ConfigurationLastWriteTime () {
         [Parameter()]
         [string] $MainScriptPath= $(throw "Script path is mandatory ($($MyInvocation.MyCommand) function)."),
         [Parameter()]
-        [PSCustomObject] $Configuration= $(throw "Configuration to work on is mandatory ($($MyInvocation.MyCommand) function).")
+        [PSCustomObject] $Configuration= $(throw "Configuration to work on is mandatory ($($MyInvocation.MyCommand) function)."),
+        [Parameter()]
+        [string] $ConfigurationFileName= "configuration.json"
+
     )
-    $configurationFile = "$MainScriptPath\configuration\configuration.json"
+    $configurationFile = "$MainScriptPath\configuration\$ConfigurationFileName"
     $configurationAttributes = Get-ChildItem -LiteralPath $configurationFile
     LogWriteDebug -LogString "Configuration last write time: $($configurationAttributes.LastWriteTime)" -MainScriptPath $MainScriptPath -DebugFlag $Configuration.debug
     return $configurationAttributes.LastWriteTime

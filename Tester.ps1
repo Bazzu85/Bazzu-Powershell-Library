@@ -16,4 +16,4 @@ CreateMissingFolder -FolderToCreate "$PSScriptRoot\configuration"
 $defaultConfiguration = [PSCustomObject]@{
     debug = $true;
 }
-$configuration = Get-ConfigurationFromJson -DefaultConfiguration $defaultConfiguration -MainScriptPath $PSScriptRoot #-ConfigurationFileName "sync Configuration.jso"
+$configuration = Get-ConfigurationFromJson -DefaultConfiguration $defaultConfiguration -MainScriptPath $PSScriptRoot -ConfigurationFileName "sync Configuration.json"

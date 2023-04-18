@@ -3,7 +3,9 @@ Function Get-ConfigurationFromJson () {
         [Parameter()]
         [PSCustomObject] $DefaultConfiguration= $(throw "Default configuration is mandatory ($($MyInvocation.MyCommand) function)."),
         [Parameter()]
-        [string] $MainScriptPath= $(throw "Script path is mandatory ($($MyInvocation.MyCommand) function).")
+        [string] $MainScriptPath= $(throw "Script path is mandatory ($($MyInvocation.MyCommand) function)."),
+        [Parameter()]
+        [string] $ConfigurationFileName= "configuration.json"
     )
 
     $configurationFile = "$MainScriptPath\configuration\configuration.json"
