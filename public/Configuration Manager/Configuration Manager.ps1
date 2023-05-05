@@ -10,7 +10,8 @@ Function Get-ConfigurationFromJson () {
 
     $configurationFile = "$MainScriptPath\configuration\$ConfigurationFileName"
 
-    LogWrite -LogString "Loading configuration file from $configurationFile" -MainScriptPath $MainScriptPath
+    $logMessage = "Loading configuration file from $configurationFile"
+    LogWrite -LogString $logMessage -MainScriptPath $MainScriptPath
     
     if (!(Test-Path -LiteralPath "$MainScriptPath\configuration")){
         New-Item -Path ("$MainScriptPath\configuration") -ItemType Directory -Force
@@ -18,7 +19,8 @@ Function Get-ConfigurationFromJson () {
 
     # If not found, create the config file
     if (!(Test-Path -Path $configurationFile)){
-        LogWrite -LogString "No configuration found. Creating a default $ConfigurationFileName and closing." -MainScriptPath $MainScriptPath
+        $logMessage = "No configuration found. Creating a default $ConfigurationFileName and closing."
+        LogWrite -LogString $logMessage -MainScriptPath $MainScriptPath
         pause
         ConvertTo-Json -InputObject $defaultConfiguration | Out-File $configurationFile
         exit 
@@ -30,9 +32,11 @@ Function Get-ConfigurationFromJson () {
     $configuration = AddMissingProperties $MainScriptPath $configuration $defaultConfiguration $configurationFile
 
     # display the configuration
-    LogWrite -LogString "Configuration returned" -MainScriptPath $MainScriptPath
+    $logMessage = "Configuration returned"
+    LogWrite -LogString $logMessage -MainScriptPath $MainScriptPath
     foreach ($property in $configuration.PSobject.Properties){
-        LogWrite -LogString " $($property.Name): $($property.value)" -MainScriptPath $MainScriptPath
+        $logMessage = " $($property.Name): $($property.value)"
+        LogWrite -LogString $logMessage -MainScriptPath $MainScriptPath
     }
 
     return $configuration
@@ -62,19 +66,22 @@ Function AddMissingProperties(){
         foreach ($property in $Configuration.PSobject.Properties){
             if ($property.Name -eq $defaultProperty.Name){
                 $found = $true
-                LogWriteDebug -LogString "$($defaultProperty.Name) found" -MainScriptPath $MainScriptPath -DebugFlag $configuration.debug
+                $logMessage = "$($defaultProperty.Name) found"
+                LogWriteDebug -LogString $logMessage -MainScriptPath $MainScriptPath -DebugFlag $configuration.debug
                 break
             }
         }
         if (!$found){
             $Configuration = $Configuration | Add-Member -NotePropertyMembers @{ $defaultProperty.Name=$defaultProperty.Value } -PassThru 
-            LogWrite -LogString "$($defaultProperty.Name) not found. Adding it to Configuration file" -MainScriptPath $MainScriptPath
+            $logMessage = "$($defaultProperty.Name) not found. Adding it to Configuration file"
+            LogWrite -LogString $logMessage -MainScriptPath $MainScriptPath
             $addedProperties++
         }
     }
 
     if ($addedProperties -gt 0){
-        LogWrite -LogString "Added some properties to the configuration file. Closing this run" -MainScriptPath $MainScriptPath
+        $logMessage ="Added some properties to the configuration file. Closing this run"
+        LogWrite -LogString $logMessage -MainScriptPath $MainScriptPath
         pause
         ConvertTo-Json -InputObject $Configuration | Out-File $ConfigurationFile
         exit
@@ -95,6 +102,7 @@ Function Get-ConfigurationLastWriteTime () {
     )
     $configurationFile = "$MainScriptPath\configuration\$ConfigurationFileName"
     $configurationAttributes = Get-ChildItem -LiteralPath $configurationFile
-    LogWriteDebug -LogString "Configuration last write time: $($configurationAttributes.LastWriteTime)" -MainScriptPath $MainScriptPath -DebugFlag $Configuration.debug
+    $logMessage = "Configuration last write time: $($configurationAttributes.LastWriteTime)"
+    LogWriteDebug -LogString $logMessage -MainScriptPath $MainScriptPath -DebugFlag $configuration.debug
     return $configurationAttributes.LastWriteTime
 }
